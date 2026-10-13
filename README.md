@@ -18,9 +18,9 @@ En `about:config` crea un booleano `tema.<azul|morado|verde>.<1-3>` en `true` (p
 
 Todas usan solo `transform`/`opacity` y se apagan con el interruptor de Windows *Efectos de animación* (`prefers-reduced-motion`); `user.js` las fuerza activas con `ui.prefersReducedMotion = 0` (bórralo si quieres que Windows mande).
 
-- **Pestañas:** entrada con fade, hover con elevación, ✕ solo al pasar el mouse, línea de acento bajo la pestaña activa, barra de carga animada, rebote + brillo del icono de audio.
+- **Pestañas:** entrada con fade, hover con elevación, ✕ solo al pasar el mouse, barra de carga animada, brillo suave del icono de audio.
 - **Barra de direcciones:** brillo de acento al enfocar, resultados en cascada.
 - **Menús y paneles:** los paneles (☰, descargas, extensiones) caen y escalan suavemente; submenús, barra de menús y carpetas de marcadores aparecen con fade. Los menús contextuales de primer nivel no se pueden animar con CSS.
 - **Contenido:** fundido suave al cambiar de pestaña.
 - **Selector de colores:** el cambio de tono se funde en 0.5 s.
-- **`user.js`:** scroll suave con física MSD (`mousewheel.default.delta_multiplier_y` ajusta la velocidad) y fundido al entrar/salir de pantalla completa.
+- **`user.js`:** scroll suave con física MSD (`mousewheel.default.delta_multiplier_y` ajusta la velocidad) fundido al entrar/salir de pantalla completa y `layout.frame_rate = 72` (ajústalo a los Hz de tu monitor).

@@ -38,3 +38,5 @@ user_pref("apz.overscroll.enabled", true);
 // Fundido al entrar/salir de pantalla completa
 user_pref("full-screen-api.transition-duration.enter", "200 200");
 user_pref("full-screen-api.transition-duration.leave", "200 200");
+// Monitor a 72 Hz
+user_pref("layout.frame_rate", 72);

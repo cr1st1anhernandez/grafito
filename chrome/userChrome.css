@@ -327,7 +327,6 @@ menupopup :is(menuitem, menu),
     @keyframes ui-fade-scale { from { opacity: 0; transform: scale(.96); } }
     @keyframes ui-pop        { 0% { transform: scale(.8); } 60% { transform: scale(1.08); } 100% { transform: none; } }
     @keyframes ui-breathe    { 50% { opacity: .45; } }
-    @keyframes ui-bounce     { 0%, 100% { transform: none; } 40% { transform: translateY(-3px); } 70% { transform: translateY(1px); } }
     @keyframes ui-star       { 0% { transform: scale(.6) rotate(-72deg); } 60% { transform: scale(1.25) rotate(10deg); } 100% { transform: none; } }
     @keyframes ui-drop       { 0% { opacity: 0; transform: translateY(-10px); } 70% { opacity: 1; transform: translateY(2px); } 100% { transform: none; } }
     @keyframes ui-glow       { 50% { filter: drop-shadow(0 0 4px var(--ui-accent)); } }
@@ -369,11 +368,9 @@ menupopup :is(menuitem, menu),
         animation: ui-breathe 1.4s ease-in-out infinite;
     }
 
-    /* 7. Audio icon bounces a few times when sound starts */
+    /* 7. Audio icon glows softly while sound plays */
     .tabbrowser-tab[soundplaying] .tab-audio-button {
-        animation:
-            ui-bounce .9s var(--ui-ease) 3,
-            ui-glow 2.4s ease-in-out 2.7s infinite;
+        animation: ui-glow 2.4s ease-in-out infinite;
     }
 
     /* 10. Tab groups: label pops, expanded tabs slide in */
@@ -471,12 +468,6 @@ menupopup :is(menuitem, menu),
         transform: scaleX(.86);
     }
 
-    /* 23. Extensions puzzle and bookmark folders bob */
-    #unified-extensions-button:hover > .toolbarbutton-icon,
-    #PlacesToolbarItems > toolbarbutton.bookmark-item[container]:hover > .toolbarbutton-icon {
-        animation: ui-bounce 500ms var(--ui-ease);
-    }
-
     /* 24. Downloads: glow while downloading, pop when finished */
     #downloads-button[progress] #downloads-indicator-icon {
         animation: ui-glow 1.6s ease-in-out infinite;
@@ -542,31 +533,11 @@ menupopup :is(menuitem, menu),
 
     /*================== EXTRA SMOOTHNESS ==================*/
 
-    /* 37. Accent line under the selected tab grows from the centre */
+    /* 38. Loading bar sweeps along the bottom of a busy tab */
     .tabbrowser-tab > .tab-stack > .tab-background {
         position: relative;
         overflow: clip;
     }
-    .tabbrowser-tab > .tab-stack > .tab-background::after {
-        content: "";
-        position: absolute;
-        inset-inline: 32%;
-        bottom: 2px;
-        height: 2px;
-        border-radius: 2px;
-        background: var(--ui-accent);
-        opacity: 0;
-        transform: scaleX(0);
-        transition:
-            transform var(--ui-slow) var(--ui-ease),
-            opacity var(--ui-fast) ease;
-    }
-    .tabbrowser-tab > .tab-stack > .tab-background[selected]::after {
-        opacity: 1;
-        transform: none;
-    }
-
-    /* 38. Loading bar sweeps along the bottom of a busy tab */
     @keyframes ui-load {
         from { transform: translateX(-100%); }
         to   { transform: translateX(250%); }
@@ -586,9 +557,6 @@ menupopup :is(menuitem, menu),
     .tabbrowser-tab[busy] > .tab-stack > .tab-background::before {
         opacity: 1;
         animation: ui-load 1.2s ease-in-out infinite;
-    }
-    .tabbrowser-tab[busy] > .tab-stack > .tab-background[selected]::after {
-        opacity: .25;
     }
 
     /* 39. Panels (☰, downloads, extensions...) open with a short drop + scale
