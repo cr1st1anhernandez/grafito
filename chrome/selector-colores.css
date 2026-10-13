@@ -1,0 +1,104 @@
+/*=====================================================================
+ *                     COLOR SELECTOR (about:config)
+ * Create ONE boolean pref in about:config and set it to true; the change
+ * applies instantly. With none enabled, "azul.1" is used.
+ *
+ *   tema.azul.1   Noche (default)   tema.morado.1  Tokyo
+ *   tema.azul.2   Océano            tema.morado.2  Amatista
+ *   tema.azul.3   Cobalto           tema.morado.3  Lavanda
+ *   tema.verde.1  Bosque            tema.gris.1    Grafito
+ *   tema.verde.2  Esmeralda         tema.gris.2    Carbón
+ *   tema.verde.3  Lima              tema.gris.3    Plata
+ *
+ * The acrylic blur stays on, but a strong tint on top makes the bar look
+ * the same whatever is behind the window. Keep this block LAST in the file
+ * so it overrides the colours above.
+ *====================================================================*/
+
+:root {
+    --ui-tint-edge: #0e1a35;
+    --ui-tint-glow: #2c4196;
+    --ui-tint-nav: #191d29;
+    --ui-tint-alpha: 80%;
+    --ui-tint-nav-alpha: 90%;
+    --ui-accent: #7aa2f7 !important;
+    --ui-accent-hover: #93b4f9 !important;
+    --ui-accent-active: #5a86e8 !important;
+}
+
+/* Blue */
+@media -moz-pref("tema.azul.2") {
+    :root { --ui-tint-edge: #082238; --ui-tint-glow: #12609e; --ui-tint-nav: #12202b;
+            --ui-accent: #5fb3f0 !important; --ui-accent-hover: #7cc3f4 !important; --ui-accent-active: #3f9ae0 !important; }
+}
+@media -moz-pref("tema.azul.3") {
+    :root { --ui-tint-edge: #0f1d52; --ui-tint-glow: #2f5be0; --ui-tint-nav: #161c33;
+            --ui-accent: #6d8dff !important; --ui-accent-hover: #8aa4ff !important; --ui-accent-active: #4f72f0 !important; }
+}
+
+/* Purple */
+@media -moz-pref("tema.morado.1") {
+    :root { --ui-tint-edge: #1a1530; --ui-tint-glow: #5b3f9e; --ui-tint-nav: #1c1a28;
+            --ui-accent: #bb9af7 !important; --ui-accent-hover: #c9aefa !important; --ui-accent-active: #9d7cd8 !important; }
+}
+@media -moz-pref("tema.morado.2") {
+    :root { --ui-tint-edge: #22102e; --ui-tint-glow: #7d2fa3; --ui-tint-nav: #1f1626;
+            --ui-accent: #d38bf5 !important; --ui-accent-hover: #dea4f8 !important; --ui-accent-active: #b86ae0 !important; }
+}
+@media -moz-pref("tema.morado.3") {
+    :root { --ui-tint-edge: #211d3d; --ui-tint-glow: #7a66c9; --ui-tint-nav: #1f1d2e;
+            --ui-accent: #b4a7f5 !important; --ui-accent-hover: #c5bbf8 !important; --ui-accent-active: #9585e0 !important; }
+}
+
+/* Green */
+@media -moz-pref("tema.verde.1") {
+    :root { --ui-tint-edge: #0b2219; --ui-tint-glow: #22684a; --ui-tint-nav: #161f1b;
+            --ui-accent: #6fcf97 !important; --ui-accent-hover: #8adbab !important; --ui-accent-active: #52b87c !important; }
+}
+@media -moz-pref("tema.verde.2") {
+    :root { --ui-tint-edge: #062824; --ui-tint-glow: #0f8a6c; --ui-tint-nav: #12201e;
+            --ui-accent: #4fd6b0 !important; --ui-accent-hover: #6fe0c0 !important; --ui-accent-active: #34bc96 !important; }
+}
+@media -moz-pref("tema.verde.3") {
+    :root { --ui-tint-edge: #14260f; --ui-tint-glow: #4f8f2a; --ui-tint-nav: #1a2116;
+            --ui-accent: #9ece6a !important; --ui-accent-hover: #b0d888 !important; --ui-accent-active: #82b84f !important; }
+}
+
+/* Gray */
+@media -moz-pref("tema.gris.1") {
+    :root { --ui-tint-edge: #16181d; --ui-tint-glow: #3a3f4b; --ui-tint-nav: #1b1c21;
+            --ui-accent: #a9b1c6 !important; --ui-accent-hover: #c0c6d6 !important; --ui-accent-active: #8c95ab !important; }
+}
+@media -moz-pref("tema.gris.2") {
+    :root { --ui-tint-edge: #1a1a1a; --ui-tint-glow: #4a4a4a; --ui-tint-nav: #1e1e1e;
+            --ui-accent: #d0d0d0 !important; --ui-accent-hover: #e2e2e2 !important; --ui-accent-active: #b0b0b0 !important; }
+}
+@media -moz-pref("tema.gris.3") {
+    :root { --ui-tint-edge: #2a2d33; --ui-tint-glow: #646a75; --ui-tint-nav: #24262b;
+            --ui-accent: #c3cad6 !important; --ui-accent-hover: #d6dbe3 !important; --ui-accent-active: #a3abb9 !important; }
+}
+
+/* Light text and dark UI on the tinted bars, even in light mode */
+#navigator-toolbox {
+    color-scheme: dark !important;
+    --ui-accent-text: #11131a !important;
+    --ui-tab-selected: rgba(255, 255, 255, .14) !important;
+    --ui-field: rgba(0, 0, 0, .28) !important;
+    --ui-field-hover: rgba(0, 0, 0, .36) !important;
+    --ui-field-focus: color-mix(in srgb, var(--ui-tint-nav) 85%, black) !important;
+}
+
+:root[customtitlebar] #navigator-toolbox,
+:root[customtitlebar] #navigator-toolbox:-moz-window-inactive,
+#navigator-toolbox {
+    background: linear-gradient(90deg,
+        color-mix(in srgb, var(--ui-tint-edge) var(--ui-tint-alpha), transparent) 0%,
+        color-mix(in srgb, var(--ui-tint-glow) var(--ui-tint-alpha), transparent) 55%,
+        color-mix(in srgb, var(--ui-tint-edge) var(--ui-tint-alpha), transparent) 100%) !important;
+}
+
+:root[customtitlebar] :is(#nav-bar, #PersonalToolbar),
+:is(#nav-bar, #PersonalToolbar) {
+    background-color: color-mix(in srgb, var(--ui-tint-nav) var(--ui-tint-nav-alpha), transparent) !important;
+    background-image: none !important;
+}

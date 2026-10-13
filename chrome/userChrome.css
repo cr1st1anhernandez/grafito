@@ -1,0 +1,653 @@
+/*
+ * userChrome.css for Windows 11 / Firefox 158+
+ * Rounded curves, translucent acrylic titlebar and soft animations.
+ *
+ * The blur comes from Windows 11's acrylic backdrop, enabled in user.js:
+ *   widget.windows.mica = true
+ *   widget.windows.mica.toplevel-backdrop = 2   (0 auto, 1 mica, 2 acrylic, 3 tabbed)
+ */
+
+/*================ GLOBAL COLORS ================*/
+
+:root {
+    --ui-radius: 10px;
+    --ui-radius-small: 8px;
+    --ui-ease: cubic-bezier(.2, .8, .2, 1);
+    --ui-fast: 160ms;
+    --ui-slow: 280ms;
+
+    /* light-dark() follows the system / Firefox colour scheme */
+    --ui-titlebar: light-dark(rgba(243, 243, 247, .55), rgba(28, 27, 34, .45));
+    --ui-navbar: light-dark(rgba(249, 249, 251, .70), rgba(28, 27, 34, .72));
+    --ui-tab-hover: light-dark(rgba(0, 0, 0, .06), rgba(255, 255, 255, .07));
+    --ui-tab-selected: light-dark(rgba(255, 255, 255, .90), rgba(82, 81, 94, .85));
+    --ui-button-hover: light-dark(rgba(0, 0, 0, .07), rgba(255, 255, 255, .10));
+    --ui-button-active: light-dark(rgba(0, 0, 0, .12), rgba(255, 255, 255, .16));
+    --ui-field: light-dark(rgba(0, 0, 0, .05), rgba(0, 0, 0, .30));
+    --ui-field-hover: light-dark(rgba(0, 0, 0, .08), rgba(0, 0, 0, .38));
+    --ui-field-focus: light-dark(#ffffff, #2b2a33);
+    --ui-shadow: 0 1px 3px rgba(0, 0, 0, .18), 0 0 0 .5px rgba(0, 0, 0, .10);
+
+    /* Tokyo Night purple accent */
+    --ui-accent: light-dark(#7847bd, #bb9af7);
+    --ui-accent-hover: light-dark(#6a3aad, #c9aefa);
+    --ui-accent-active: light-dark(#5a2f99, #9d7cd8);
+    --ui-accent-text: light-dark(#ffffff, #1a1b26);
+}
+
+/*================== ACCENT (replaces Windows accent colour) ==================*/
+
+:root {
+    --color-accent-primary: var(--ui-accent) !important;
+    --color-accent-primary-hover: var(--ui-accent-hover) !important;
+    --color-accent-primary-active: var(--ui-accent-active) !important;
+    --color-accent-primary-selected: var(--ui-accent) !important;
+    --focus-outline-color: var(--ui-accent) !important;
+    --toolbarbutton-icon-fill-attention: var(--ui-accent) !important;
+    --toolbarbutton-icon-fill-attention-text: var(--ui-accent-text) !important;
+    --button-background-color-primary: var(--ui-accent) !important;
+    --button-background-color-primary-hover: var(--ui-accent-hover) !important;
+    --button-background-color-primary-active: var(--ui-accent-active) !important;
+    --button-text-color-primary: var(--ui-accent-text) !important;
+    --link-color: var(--ui-accent) !important;
+    --link-color-hover: var(--ui-accent-hover) !important;
+    --link-color-active: var(--ui-accent-active) !important;
+    --urlbarView-url-color: var(--ui-accent) !important;
+    --tab-border-color-selected-leading: var(--ui-accent) !important;
+    --tab-border-color-selected-trailing: var(--ui-accent-active) !important;
+}
+
+/* URLs in the address bar results */
+.urlbarView-url {
+    color: var(--ui-accent) !important;
+}
+
+/*================== TRANSLUCENT WINDOW (BLUR) ==================*/
+
+/* Firefox only makes the toolbox see-through without a built-in theme;
+ * force it so the acrylic backdrop shows behind tabs with any theme. */
+@media (-moz-windows-mica) {
+    :root[customtitlebar] {
+        background-color: transparent !important;
+        --toolbox-background-image: none !important;
+        --toolbox-background-color: transparent !important;
+        --toolbox-background-color-inactive: transparent !important;
+        --lwt-header-image: none !important;
+        --lwt-additional-images: none !important;
+    }
+
+    :root[customtitlebar] #navigator-toolbox {
+        background: var(--ui-titlebar) !important;
+        border-bottom: 0 !important;
+        transition: background-color var(--ui-slow) ease;
+    }
+
+    :root[customtitlebar] #navigator-toolbox:-moz-window-inactive {
+        background: light-dark(rgba(243, 243, 247, .75), rgba(28, 27, 34, .70)) !important;
+    }
+
+    :root[customtitlebar] :is(#TabsToolbar, #toolbar-menubar, #titlebar) {
+        background: transparent !important;
+    }
+
+    :root[customtitlebar] :is(#nav-bar, #PersonalToolbar) {
+        background-color: var(--ui-navbar) !important;
+        background-image: none !important;
+    }
+}
+
+/*================== MAIN HEADER ==================*/
+
+#navigator-toolbox {
+    border: 0 !important;
+}
+
+#nav-bar {
+    box-shadow: none !important;
+    border-top: 0 !important;
+    padding-block: 4px !important;
+}
+
+/*================== TABS BAR ==================*/
+
+#TabsToolbar {
+    padding: 0 !important;
+}
+
+.titlebar-spacer[type="pre-tabs"] {
+    display: none !important;
+}
+
+.tabbrowser-tab {
+    padding-inline: 3px !important;
+}
+
+.tabbrowser-tab > .tab-stack > .tab-background {
+    border-radius: var(--ui-radius) !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    background-image: none !important;
+    transition:
+        background-color var(--ui-fast) var(--ui-ease),
+        box-shadow var(--ui-fast) var(--ui-ease),
+        transform var(--ui-fast) var(--ui-ease) !important;
+}
+
+/* Firefox 158 puts [selected] on .tab-background itself, and the Nova
+ * design paints it with a gradient-border `background` shorthand. */
+.tabbrowser-tab:hover > .tab-stack > .tab-background:not([selected], [multiselected]) {
+    background: var(--ui-tab-hover) !important;
+}
+
+.tabbrowser-tab > .tab-stack > .tab-background:is([selected], [multiselected]) {
+    background: var(--ui-tab-selected) !important;
+    box-shadow: var(--ui-shadow) !important;
+}
+
+/* Soft press feedback */
+.tabbrowser-tab:active > .tab-stack > .tab-background:not([selected]) {
+    transform: scale(.97);
+}
+
+/* Unselected tab labels slightly muted, like the reference */
+.tabbrowser-tab:not([visuallyselected]) .tab-label {
+    opacity: .75;
+    transition: opacity var(--ui-fast) ease;
+}
+.tabbrowser-tab:hover .tab-label {
+    opacity: 1;
+}
+
+/* Fade + rise when a tab opens */
+@keyframes ui-tab-in {
+    from { opacity: 0; transform: translateY(6px) scale(.96); }
+    to   { opacity: 1; transform: none; }
+}
+.tabbrowser-tab[fadein]:not([pinned]) > .tab-stack {
+    animation: ui-tab-in var(--ui-slow) var(--ui-ease);
+}
+
+/* Hide the old separators between tabs */
+.tabbrowser-tab::after,
+.tabbrowser-tab::before {
+    border: 0 !important;
+}
+
+.tab-close-button {
+    border-radius: var(--ui-radius-small) !important;
+    opacity: .7;
+    transition:
+        background-color var(--ui-fast) ease,
+        opacity var(--ui-fast) ease,
+        transform var(--ui-fast) var(--ui-ease) !important;
+}
+.tab-close-button:hover {
+    opacity: 1;
+    background-color: var(--ui-button-hover) !important;
+}
+.tab-close-button:active {
+    transform: scale(.88);
+}
+
+/*================== TOOLBAR BUTTONS ==================*/
+
+:root {
+    --toolbarbutton-border-radius: var(--ui-radius-small) !important;
+    --toolbarbutton-hover-background: var(--ui-button-hover) !important;
+    --toolbarbutton-active-background: var(--ui-button-active) !important;
+}
+
+toolbar .toolbarbutton-1 > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack, .toolbarbutton-text),
+#tabs-newtab-button > .toolbarbutton-icon,
+#new-tab-button > .toolbarbutton-icon {
+    border-radius: var(--ui-radius-small) !important;
+    transition:
+        background-color var(--ui-fast) ease,
+        transform var(--ui-fast) var(--ui-ease) !important;
+}
+
+toolbar .toolbarbutton-1:not([disabled]):active > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
+#tabs-newtab-button:active > .toolbarbutton-icon {
+    transform: scale(.9);
+}
+
+/* New-tab "+" spins a quarter turn on hover */
+:is(#tabs-newtab-button, #new-tab-button) > .toolbarbutton-icon {
+    transition:
+        background-color var(--ui-fast) ease,
+        rotate var(--ui-slow) var(--ui-ease) !important;
+}
+:is(#tabs-newtab-button, #new-tab-button):hover > .toolbarbutton-icon {
+    rotate: 90deg;
+}
+
+/*================== BOOKMARK ITEMS ==================*/
+
+/* Same square hover as the other toolbar buttons (Firefox uses 4px side
+ * padding, which made icon-only folders look like a narrow pill) */
+#PlacesToolbarItems > toolbarbutton.bookmark-item:not(.subviewbutton) {
+    padding: 8px !important;
+    min-height: 32px;
+    min-width: 32px;
+    justify-content: center;
+    border-radius: var(--ui-radius-small) !important;
+    transition: background-color var(--ui-fast) ease, transform var(--ui-fast) var(--ui-ease) !important;
+}
+
+/*================== URL BAR ==================*/
+
+#urlbar,
+#searchbar {
+    --toolbar-field-border-color: transparent !important;
+    --toolbar-field-focus-border-color: transparent !important;
+}
+
+#urlbar > .urlbar-background,
+#searchbar {
+    border-radius: var(--ui-radius-small) !important;
+    border: 0 !important;
+    background-color: var(--ui-field) !important;
+    box-shadow: none !important;
+    transition:
+        background-color var(--ui-fast) ease,
+        box-shadow var(--ui-slow) var(--ui-ease) !important;
+}
+
+#urlbar:not([focused], [open]):hover > .urlbar-background {
+    background-color: var(--ui-field-hover) !important;
+}
+
+#urlbar:is([focused], [open]) > .urlbar-background {
+    background-color: var(--ui-field-focus) !important;
+    /* Firefox draws the focus ring itself (now purple); an extra outer
+     * ring here gets clipped at the top when the results open. */
+}
+
+#urlbar[focused]:not([open]) > .urlbar-background {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .22) !important;
+}
+
+#urlbar .urlbarView {
+    border-radius: 0 0 var(--ui-radius-small) var(--ui-radius-small);
+}
+
+/* Results slide in softly */
+@keyframes ui-drop {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: none; }
+}
+#urlbar[open] .urlbarView {
+    animation: ui-drop var(--ui-fast) var(--ui-ease);
+}
+
+/*================== MENUS / POPUPS ==================*/
+
+menupopup,
+panel {
+    --panel-border-radius: var(--ui-radius) !important;
+    --arrowpanel-border-radius: var(--ui-radius) !important;
+}
+
+/*================== CONTENT AREA ==================*/
+
+#tabbrowser-tabbox {
+    border-top: 0 !important;
+}
+
+/*=====================================================================
+ *                        SMOOTH ANIMATIONS
+ * Only transform / opacity are animated so everything stays on the GPU.
+ * All motion turns off with Windows' "Animation effects" switch
+ * (prefers-reduced-motion).
+ *====================================================================*/
+
+/* Selected address-bar result tinted with the accent */
+:root {
+    --urlbarview-background-color-selected: color-mix(in srgb, var(--ui-accent) 30%, transparent) !important;
+    --urlbarview-background-color-hover: color-mix(in srgb, var(--ui-accent) 12%, transparent) !important;
+}
+
+/* Colour fades are fine even with reduced motion */
+.urlbarView-row,
+menupopup :is(menuitem, menu),
+.subviewbutton,
+#downloadsListBox > richlistitem {
+    transition: background-color var(--ui-fast) ease, color var(--ui-fast) ease !important;
+}
+
+@media not (prefers-reduced-motion) {
+
+    @keyframes ui-fade-up    { from { opacity: 0; transform: translateY(6px); } }
+    @keyframes ui-fade-down  { from { opacity: 0; transform: translateY(-6px); } }
+    @keyframes ui-fade-left  { from { opacity: 0; transform: translateX(-8px); } }
+    @keyframes ui-fade-scale { from { opacity: 0; transform: scale(.96); } }
+    @keyframes ui-pop        { 0% { transform: scale(.8); } 60% { transform: scale(1.08); } 100% { transform: none; } }
+    @keyframes ui-breathe    { 50% { opacity: .45; } }
+    @keyframes ui-bounce     { 0%, 100% { transform: none; } 40% { transform: translateY(-3px); } 70% { transform: translateY(1px); } }
+    @keyframes ui-star       { 0% { transform: scale(.6) rotate(-72deg); } 60% { transform: scale(1.25) rotate(10deg); } 100% { transform: none; } }
+    @keyframes ui-drop       { 0% { opacity: 0; transform: translateY(-10px); } 70% { opacity: 1; transform: translateY(2px); } 100% { transform: none; } }
+    @keyframes ui-glow       { 50% { filter: drop-shadow(0 0 4px var(--ui-accent)); } }
+
+    /*================== TABS ==================*/
+
+    /* 3. The selected pill cross-fades between tabs (background transition
+     *    lives on .tab-background above) and scales in softly */
+    .tabbrowser-tab > .tab-stack > .tab-background[selected] {
+        animation: ui-fade-scale var(--ui-fast) var(--ui-ease);
+    }
+
+    /* 4. Lift on hover */
+    .tabbrowser-tab > .tab-stack {
+        transition: transform var(--ui-fast) var(--ui-ease);
+    }
+    .tabbrowser-tab:hover:not([visuallyselected], [pinned]) > .tab-stack {
+        transform: translateY(-1px);
+    }
+    .tabbrowser-tab:hover > .tab-stack > .tab-background:not([selected]) {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, .18) !important;
+    }
+
+    /* 5. Close button fades in only on hover (always visible on the active tab) */
+    .tabbrowser-tab:not([visuallyselected]) .tab-close-button {
+        opacity: 0;
+        transform: scale(.8);
+    }
+    .tabbrowser-tab:not([visuallyselected]):hover .tab-close-button {
+        opacity: .7;
+        transform: none;
+    }
+    .tabbrowser-tab:not([visuallyselected]) .tab-close-button:hover {
+        opacity: 1;
+    }
+
+    /* 6. Icon breathes while the page loads */
+    .tabbrowser-tab[busy] .tab-icon-stack {
+        animation: ui-breathe 1.4s ease-in-out infinite;
+    }
+
+    /* 7. Audio icon bounces a few times when sound starts */
+    .tabbrowser-tab[soundplaying] .tab-audio-button {
+        animation: ui-bounce .9s var(--ui-ease) 3;
+    }
+
+    /* 10. Tab groups: label pops, expanded tabs slide in */
+    .tab-group-label {
+        transition: transform var(--ui-fast) var(--ui-ease), background-color var(--ui-fast) ease !important;
+    }
+    .tab-group-label:hover {
+        transform: scale(1.05);
+    }
+    .tab-group-label:active {
+        transform: scale(.94);
+    }
+    tab-group:not([collapsed]) > .tabbrowser-tab > .tab-stack {
+        animation: ui-fade-left var(--ui-slow) var(--ui-ease);
+    }
+
+    /*================== ADDRESS BAR ==================*/
+
+    /* 13. Results cascade in one after another */
+    .urlbarView-row {
+        animation: ui-fade-down var(--ui-fast) var(--ui-ease) both;
+    }
+    .urlbarView-row:nth-child(2) { animation-delay: 20ms; }
+    .urlbarView-row:nth-child(3) { animation-delay: 40ms; }
+    .urlbarView-row:nth-child(4) { animation-delay: 60ms; }
+    .urlbarView-row:nth-child(5) { animation-delay: 80ms; }
+    .urlbarView-row:nth-child(6) { animation-delay: 100ms; }
+    .urlbarView-row:nth-child(7) { animation-delay: 120ms; }
+    .urlbarView-row:nth-child(8) { animation-delay: 140ms; }
+    .urlbarView-row:nth-child(n+9) { animation-delay: 160ms; }
+
+    /* 14. Selected row: purple background glides (colour transition above)
+     *     plus a tiny nudge to the right */
+    .urlbarView-row > .urlbarView-row-inner {
+        transition: transform var(--ui-fast) var(--ui-ease);
+    }
+    .urlbarView-row[selected] > .urlbarView-row-inner {
+        transform: translateX(3px);
+    }
+
+    /* 15. Icons inside the field fade in on hover */
+    #page-action-buttons > * {
+        transition: opacity var(--ui-fast) ease;
+    }
+    #urlbar:not(:hover, [focused]) #page-action-buttons > * {
+        opacity: .55;
+    }
+
+    /* 16. Star spins and pops when a bookmark is saved */
+    #star-button[starred] {
+        animation: ui-star 450ms var(--ui-ease);
+    }
+
+    /* 17. Placeholder fades on focus */
+    #urlbar-input::placeholder {
+        transition: opacity var(--ui-slow) ease;
+    }
+    #urlbar[focused] #urlbar-input::placeholder {
+        opacity: .45;
+    }
+
+    /*================== TOOLBAR BUTTONS ==================*/
+
+    /* 20. Back / forward arrows nudge in their direction */
+    #back-button > .toolbarbutton-icon,
+    #forward-button > .toolbarbutton-icon {
+        transition:
+            background-color var(--ui-fast) ease,
+            padding var(--ui-fast) var(--ui-ease),
+            transform var(--ui-fast) var(--ui-ease) !important;
+    }
+    #back-button:not([disabled]):hover > .toolbarbutton-icon {
+        padding-inline: calc(var(--toolbarbutton-padding-inner) - 2px) calc(var(--toolbarbutton-padding-inner) + 2px) !important;
+    }
+    #forward-button:not([disabled]):hover > .toolbarbutton-icon {
+        padding-inline: calc(var(--toolbarbutton-padding-inner) + 2px) calc(var(--toolbarbutton-padding-inner) - 2px) !important;
+    }
+
+    /* 21. Reload spins a full turn when clicked (round background so only
+     *     the arrow appears to move) */
+    #reload-button > .toolbarbutton-icon {
+        border-radius: 50% !important;
+        transition: background-color var(--ui-fast) ease, rotate 0s 600ms !important;
+    }
+    #reload-button:hover:active > .toolbarbutton-icon {
+        rotate: 360deg;
+        transition: background-color var(--ui-fast) ease, rotate 600ms var(--ui-ease) !important;
+    }
+
+    /* 22. Menu ☰ lines squeeze on hover */
+    #PanelUI-menu-button > .toolbarbutton-badge-stack {
+        transition: transform var(--ui-fast) var(--ui-ease);
+    }
+    #PanelUI-menu-button:hover > .toolbarbutton-badge-stack {
+        transform: scaleX(.86);
+    }
+
+    /* 23. Extensions puzzle and bookmark folders bob */
+    #unified-extensions-button:hover > .toolbarbutton-icon,
+    #PlacesToolbarItems > toolbarbutton.bookmark-item[container]:hover > .toolbarbutton-icon {
+        animation: ui-bounce 500ms var(--ui-ease);
+    }
+
+    /* 24. Downloads: glow while downloading, pop when finished */
+    #downloads-button[progress] #downloads-indicator-icon {
+        animation: ui-glow 1.6s ease-in-out infinite;
+    }
+    #downloads-button[notification="finish"] > .toolbarbutton-badge-stack {
+        animation: ui-pop 500ms var(--ui-ease);
+    }
+
+    /*================== MENUS & PANELS ==================*/
+
+    /* 27. Menu hover backgrounds fade (transition above); panel buttons press */
+    .subviewbutton {
+        transition: background-color var(--ui-fast) ease, transform var(--ui-fast) var(--ui-ease) !important;
+    }
+    .subviewbutton:active {
+        transform: scale(.98);
+    }
+
+    /* 30. Downloads list items cascade */
+    #downloadsListBox > richlistitem {
+        animation: ui-fade-up 200ms var(--ui-ease) both;
+    }
+    #downloadsListBox > richlistitem:nth-child(2) { animation-delay: 30ms; }
+    #downloadsListBox > richlistitem:nth-child(3) { animation-delay: 60ms; }
+    #downloadsListBox > richlistitem:nth-child(4) { animation-delay: 90ms; }
+    #downloadsListBox > richlistitem:nth-child(n+5) { animation-delay: 120ms; }
+
+    /*================== WINDOW & CONTENT ==================*/
+
+    /* 31. Tabs dim softly when the window loses focus */
+    #TabsToolbar {
+        transition: opacity var(--ui-slow) ease;
+    }
+    #TabsToolbar:-moz-window-inactive {
+        opacity: .7;
+    }
+
+    /* 32. Bookmarks bar: Firefox already slides it; use the soft curve */
+    :root[sessionrestored] #PersonalToolbar:not(.instant) {
+        transition-timing-function: var(--ui-ease) !important;
+        transition-duration: 220ms !important;
+    }
+
+    /* 33. Find bar (Ctrl+F) rises from the bottom */
+    findbar:not([hidden]) {
+        animation: ui-fade-up 200ms var(--ui-ease);
+    }
+
+    /* 34. Notifications ("save password?") drop in with a soft bounce */
+    #notification-popup popupnotification {
+        animation: ui-drop 320ms var(--ui-ease);
+    }
+
+    /* 35. Sidebar slides in */
+    #sidebar-box:not([hidden]) {
+        animation: ui-fade-left 220ms var(--ui-ease);
+    }
+
+    /* 36. Fullscreen toolbars glide instead of snapping */
+    #navigator-toolbox[fullscreenShouldAnimate] {
+        transition: margin-top 350ms var(--ui-ease) !important;
+    }
+}
+
+/* Respect reduced motion for the base theme's animations too */
+@media (prefers-reduced-motion) {
+    .tabbrowser-tab > .tab-stack,
+    #urlbar[open] .urlbarView {
+        animation: none !important;
+    }
+    :is(#tabs-newtab-button, #new-tab-button):hover > .toolbarbutton-icon {
+        rotate: none;
+    }
+}
+
+/*=====================================================================
+ *                     COLOR SELECTOR (about:config)
+ * Create ONE boolean pref in about:config and set it to true; the change
+ * applies instantly. With none enabled, "azul.1" is used.
+ *
+ *   tema.azul.1   Noche (default)   tema.morado.1  Tokyo
+ *   tema.azul.2   Océano            tema.morado.2  Amatista
+ *   tema.azul.3   Cobalto           tema.morado.3  Lavanda
+ *   tema.verde.1  Bosque            tema.gris.1    Grafito
+ *   tema.verde.2  Esmeralda         tema.gris.2    Carbón
+ *   tema.verde.3  Lima              tema.gris.3    Plata
+ *
+ * The acrylic blur stays on, but a strong tint on top makes the bar look
+ * the same whatever is behind the window. Keep this block LAST in the file
+ * so it overrides the colours above.
+ *====================================================================*/
+
+:root {
+    --ui-tint-edge: #0e1a35;
+    --ui-tint-glow: #2c4196;
+    --ui-tint-nav: #191d29;
+    --ui-tint-alpha: 80%;
+    --ui-tint-nav-alpha: 90%;
+    --ui-accent: #7aa2f7 !important;
+    --ui-accent-hover: #93b4f9 !important;
+    --ui-accent-active: #5a86e8 !important;
+}
+
+/* Blue */
+@media -moz-pref("tema.azul.2") {
+    :root { --ui-tint-edge: #082238; --ui-tint-glow: #12609e; --ui-tint-nav: #12202b;
+            --ui-accent: #5fb3f0 !important; --ui-accent-hover: #7cc3f4 !important; --ui-accent-active: #3f9ae0 !important; }
+}
+@media -moz-pref("tema.azul.3") {
+    :root { --ui-tint-edge: #0f1d52; --ui-tint-glow: #2f5be0; --ui-tint-nav: #161c33;
+            --ui-accent: #6d8dff !important; --ui-accent-hover: #8aa4ff !important; --ui-accent-active: #4f72f0 !important; }
+}
+
+/* Purple */
+@media -moz-pref("tema.morado.1") {
+    :root { --ui-tint-edge: #1a1530; --ui-tint-glow: #5b3f9e; --ui-tint-nav: #1c1a28;
+            --ui-accent: #bb9af7 !important; --ui-accent-hover: #c9aefa !important; --ui-accent-active: #9d7cd8 !important; }
+}
+@media -moz-pref("tema.morado.2") {
+    :root { --ui-tint-edge: #22102e; --ui-tint-glow: #7d2fa3; --ui-tint-nav: #1f1626;
+            --ui-accent: #d38bf5 !important; --ui-accent-hover: #dea4f8 !important; --ui-accent-active: #b86ae0 !important; }
+}
+@media -moz-pref("tema.morado.3") {
+    :root { --ui-tint-edge: #211d3d; --ui-tint-glow: #7a66c9; --ui-tint-nav: #1f1d2e;
+            --ui-accent: #b4a7f5 !important; --ui-accent-hover: #c5bbf8 !important; --ui-accent-active: #9585e0 !important; }
+}
+
+/* Green */
+@media -moz-pref("tema.verde.1") {
+    :root { --ui-tint-edge: #0b2219; --ui-tint-glow: #22684a; --ui-tint-nav: #161f1b;
+            --ui-accent: #6fcf97 !important; --ui-accent-hover: #8adbab !important; --ui-accent-active: #52b87c !important; }
+}
+@media -moz-pref("tema.verde.2") {
+    :root { --ui-tint-edge: #062824; --ui-tint-glow: #0f8a6c; --ui-tint-nav: #12201e;
+            --ui-accent: #4fd6b0 !important; --ui-accent-hover: #6fe0c0 !important; --ui-accent-active: #34bc96 !important; }
+}
+@media -moz-pref("tema.verde.3") {
+    :root { --ui-tint-edge: #14260f; --ui-tint-glow: #4f8f2a; --ui-tint-nav: #1a2116;
+            --ui-accent: #9ece6a !important; --ui-accent-hover: #b0d888 !important; --ui-accent-active: #82b84f !important; }
+}
+
+/* Gray */
+@media -moz-pref("tema.gris.1") {
+    :root { --ui-tint-edge: #16181d; --ui-tint-glow: #3a3f4b; --ui-tint-nav: #1b1c21;
+            --ui-accent: #a9b1c6 !important; --ui-accent-hover: #c0c6d6 !important; --ui-accent-active: #8c95ab !important; }
+}
+@media -moz-pref("tema.gris.2") {
+    :root { --ui-tint-edge: #1a1a1a; --ui-tint-glow: #4a4a4a; --ui-tint-nav: #1e1e1e;
+            --ui-accent: #d0d0d0 !important; --ui-accent-hover: #e2e2e2 !important; --ui-accent-active: #b0b0b0 !important; }
+}
+@media -moz-pref("tema.gris.3") {
+    :root { --ui-tint-edge: #2a2d33; --ui-tint-glow: #646a75; --ui-tint-nav: #24262b;
+            --ui-accent: #c3cad6 !important; --ui-accent-hover: #d6dbe3 !important; --ui-accent-active: #a3abb9 !important; }
+}
+
+/* Light text and dark UI on the tinted bars, even in light mode */
+#navigator-toolbox {
+    color-scheme: dark !important;
+    --ui-accent-text: #11131a !important;
+    --ui-tab-selected: rgba(255, 255, 255, .14) !important;
+    --ui-field: rgba(0, 0, 0, .28) !important;
+    --ui-field-hover: rgba(0, 0, 0, .36) !important;
+    --ui-field-focus: color-mix(in srgb, var(--ui-tint-nav) 85%, black) !important;
+}
+
+:root[customtitlebar] #navigator-toolbox,
+:root[customtitlebar] #navigator-toolbox:-moz-window-inactive,
+#navigator-toolbox {
+    background: linear-gradient(90deg,
+        color-mix(in srgb, var(--ui-tint-edge) var(--ui-tint-alpha), transparent) 0%,
+        color-mix(in srgb, var(--ui-tint-glow) var(--ui-tint-alpha), transparent) 55%,
+        color-mix(in srgb, var(--ui-tint-edge) var(--ui-tint-alpha), transparent) 100%) !important;
+}
+
+:root[customtitlebar] :is(#nav-bar, #PersonalToolbar),
+:is(#nav-bar, #PersonalToolbar) {
+    background-color: color-mix(in srgb, var(--ui-tint-nav) var(--ui-tint-nav-alpha), transparent) !important;
+    background-image: none !important;
+}
