@@ -18,3 +18,23 @@ user_pref("full-screen-api.warning.delay", -1);
 // Mostrar URL completa con https://
 user_pref("browser.urlbar.trimURLs", false);
 user_pref("browser.urlbar.trimHttps", false);
+
+// Animaciones del navegador siempre activas (aunque Windows tenga "Efectos de animación" apagado)
+user_pref("toolkit.cosmeticAnimations.enabled", true);
+user_pref("ui.prefersReducedMotion", 0);
+// Scroll suave con física (MSD)
+user_pref("general.smoothScroll", true);
+user_pref("general.smoothScroll.msdPhysics.enabled", true);
+user_pref("general.smoothScroll.msdPhysics.continuousMotionMaxDeltaMS", 12);
+user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant", 600);
+user_pref("general.smoothScroll.msdPhysics.regularSpringConstant", 650);
+user_pref("general.smoothScroll.msdPhysics.slowdownMinDeltaMS", 25);
+user_pref("general.smoothScroll.msdPhysics.slowdownMinDeltaRatio", "2");
+user_pref("general.smoothScroll.msdPhysics.slowdownSpringConstant", 250);
+user_pref("general.smoothScroll.currentVelocityWeighting", "1");
+user_pref("general.smoothScroll.stopDecelerationWeighting", "1");
+user_pref("mousewheel.default.delta_multiplier_y", 250);
+user_pref("apz.overscroll.enabled", true);
+// Fundido al entrar/salir de pantalla completa
+user_pref("full-screen-api.transition-duration.enter", "200 200");
+user_pref("full-screen-api.transition-duration.leave", "200 200");

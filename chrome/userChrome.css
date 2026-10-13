@@ -265,7 +265,10 @@ toolbar .toolbarbutton-1:not([disabled]):active > :is(.toolbarbutton-icon, .tool
 }
 
 #urlbar[focused]:not([open]) > .urlbar-background {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, .22) !important;
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, .22),
+        0 0 0 1px color-mix(in srgb, var(--ui-accent) 45%, transparent),
+        0 0 14px color-mix(in srgb, var(--ui-accent) 28%, transparent) !important;
 }
 
 #urlbar .urlbarView {
@@ -368,7 +371,9 @@ menupopup :is(menuitem, menu),
 
     /* 7. Audio icon bounces a few times when sound starts */
     .tabbrowser-tab[soundplaying] .tab-audio-button {
-        animation: ui-bounce .9s var(--ui-ease) 3;
+        animation:
+            ui-bounce .9s var(--ui-ease) 3,
+            ui-glow 2.4s ease-in-out 2.7s infinite;
     }
 
     /* 10. Tab groups: label pops, expanded tabs slide in */
@@ -534,6 +539,85 @@ menupopup :is(menuitem, menu),
     #navigator-toolbox[fullscreenShouldAnimate] {
         transition: margin-top 350ms var(--ui-ease) !important;
     }
+
+    /*================== EXTRA SMOOTHNESS ==================*/
+
+    /* 37. Accent line under the selected tab grows from the centre */
+    .tabbrowser-tab > .tab-stack > .tab-background {
+        position: relative;
+        overflow: clip;
+    }
+    .tabbrowser-tab > .tab-stack > .tab-background::after {
+        content: "";
+        position: absolute;
+        inset-inline: 32%;
+        bottom: 2px;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--ui-accent);
+        opacity: 0;
+        transform: scaleX(0);
+        transition:
+            transform var(--ui-slow) var(--ui-ease),
+            opacity var(--ui-fast) ease;
+    }
+    .tabbrowser-tab > .tab-stack > .tab-background[selected]::after {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* 38. Loading bar sweeps along the bottom of a busy tab */
+    @keyframes ui-load {
+        from { transform: translateX(-100%); }
+        to   { transform: translateX(250%); }
+    }
+    .tabbrowser-tab > .tab-stack > .tab-background::before {
+        content: "";
+        position: absolute;
+        inset-inline-start: 0;
+        bottom: 2px;
+        width: 40%;
+        height: 2px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, transparent, var(--ui-accent), transparent);
+        opacity: 0;
+        transition: opacity var(--ui-slow) ease;
+    }
+    .tabbrowser-tab[busy] > .tab-stack > .tab-background::before {
+        opacity: 1;
+        animation: ui-load 1.2s ease-in-out infinite;
+    }
+    .tabbrowser-tab[busy] > .tab-stack > .tab-background[selected]::after {
+        opacity: .25;
+    }
+
+    /* 39. Panels (☰, downloads, extensions...) open with a short drop + scale
+     *     instead of Firefox's 70px slide */
+    @media (-moz-panel-animations) {
+        :is(.animatable-menupopup, panel[type="arrow"]):not([animate="false"], [animate="open"], [animate="cancel"]) {
+            transform: translateY(-8px) scale(.97) !important;
+        }
+        :is(.animatable-menupopup, panel[type="arrow"])[side="bottom"]:not([animate="false"], [animate="open"], [animate="cancel"]) {
+            transform: translateY(8px) scale(.97) !important;
+        }
+    }
+    :is(.animatable-menupopup, panel[type="arrow"]):not([animate="false"]) {
+        transform-origin: top center;
+        transition-duration: 200ms !important;
+        transition-timing-function: var(--ui-ease), ease-out !important;
+    }
+
+    /* 40. Submenus, menubar and bookmark-folder menus fade + scale in
+     *     (top-level context menus expose no "open" state to CSS) */
+    :is(menu, toolbarbutton, button)[open] > menupopup:not(.animatable-menupopup) {
+        animation: ui-fade-scale 140ms var(--ui-ease);
+    }
+
+    /* 41. Page content fades in softly when switching tabs */
+    @keyframes ui-content-in { from { opacity: .6; } }
+    #tabbrowser-tabpanels > .deck-selected > .browserContainer {
+        animation: ui-content-in 160ms ease-out;
+    }
 }
 
 /* Respect reduced motion for the base theme's animations too */
@@ -563,6 +647,19 @@ menupopup :is(menuitem, menu),
  * the same whatever is behind the window. Keep this block LAST in the file
  * so it overrides the colours above.
  *====================================================================*/
+
+/* 42. Switching colour cross-fades instead of snapping */
+@property --ui-tint-edge { syntax: "<color>"; inherits: true; initial-value: #0e1a35; }
+@property --ui-tint-glow { syntax: "<color>"; inherits: true; initial-value: #2c4196; }
+@property --ui-tint-nav  { syntax: "<color>"; inherits: true; initial-value: #191d29; }
+@property --ui-accent    { syntax: "<color>"; inherits: true; initial-value: #7aa2f7; }
+:root {
+    transition:
+        --ui-tint-edge 500ms ease,
+        --ui-tint-glow 500ms ease,
+        --ui-tint-nav 500ms ease,
+        --ui-accent 500ms ease;
+}
 
 :root {
     --ui-tint-edge: #0e1a35;
