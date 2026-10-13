@@ -40,3 +40,5 @@ user_pref("full-screen-api.transition-duration.enter", "200 200");
 user_pref("full-screen-api.transition-duration.leave", "200 200");
 // Monitor a 72 Hz
 user_pref("layout.frame_rate", 72);
+// Sin ventana gris provisional al arrancar (no carga userChrome.css ni el tinte)
+user_pref("browser.startup.blankWindow", false);
