@@ -1,5 +1,5 @@
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
-user_pref("widget.windows.mica", true);
+user_pref("widget.windows.mica", false);
 user_pref("widget.windows.mica.toplevel-backdrop", 2);
 user_pref("widget.windows.mica.popups", 1);
 // No ofrecer guardar contraseñas
@@ -40,5 +40,5 @@ user_pref("full-screen-api.transition-duration.enter", "200 200");
 user_pref("full-screen-api.transition-duration.leave", "200 200");
 // Monitor a 72 Hz
 user_pref("layout.frame_rate", 72);
-// Sin ventana gris provisional al arrancar (no carga userChrome.css ni el tinte)
-user_pref("browser.startup.blankWindow", false);
+// Ventana provisional + skeleton UI al arrancar
+user_pref("browser.startup.blankWindow", true);
